@@ -1,0 +1,51 @@
+CREATE DATABASE aggflow_assignment;
+
+
+CREATE TABLE captain (
+    id BIGSERIAL NOT NULL PRIMARY KEY,
+    name VARCHAR(18) NOT NULL,
+    age integer NOT NULL
+);
+
+
+CREATE TABLE boat (
+    id BIGSERIAL NOT NULL PRIMARY KEY,
+    name VARCHAR(18) NOT NULL,
+    size integer NOT NULL,
+    captain_id BIGINT REFERENCES captain (id),
+    UNIQUE(captain_id)
+);
+
+
+
+CREATE FUNCTION zero_value_checker() RETURNS trigger AS $$
+    BEGIN
+        -- Check that empname and salary are given
+        IF NEW.captain_id = 0 THEN
+            NEW.captain_id = NULL;
+        END IF;
+        RETURN NEW;
+    END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER zero_value_checker BEFORE INSERT OR UPDATE ON boat FOR EACH ROW EXECUTE PROCEDURE zero_value_checker();
+
+
+
+
+INSERT INTO captain (name, age) VALUES ('captain1',26)
+INSERT INTO captain (name, age) VALUES ('captain2',44)
+INSERT INTO boat(name, size, captain_id) VALUES ('ship1',10000,2)
+INSERT INTO boat(name, size ) VALUES ('ship2',55000)
+
+
+
+
+
+
+
+
+
+
+
+
